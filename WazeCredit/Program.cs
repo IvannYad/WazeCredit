@@ -1,10 +1,16 @@
+using System.Configuration;
 using WazeCredit.Services;
+using WazeCredit.Utility.AppSettingsClasses;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IMarketForecaster, MarketForecasterV2>();
+builder.Services.Configure<WazeForecastSettings>(builder.Configuration.GetSection("WazeForecast"));
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.Configure<SendGridSettings>(builder.Configuration.GetSection("SendGrid"));
+builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection("Twilio"));
 
 var app = builder.Build();
 
