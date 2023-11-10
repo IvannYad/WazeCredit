@@ -1,6 +1,7 @@
 using System.Configuration;
 using WazeCredit.Middleware;
 using WazeCredit.Services;
+using WazeCredit.Services.LifetimeExample;
 using WazeCredit.Utility.AppSettingsClasses;
 using WazeCredit.Utility.DI_Config;
 
@@ -10,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IMarketForecaster, MarketForecasterV2>();
 builder.Services.AddAppSettingsConfig(builder.Configuration);
+builder.Services.AddTransient<TransientService>();
+builder.Services.AddTransient<ScopedService>();
+builder.Services.AddTransient<SingletonService>();
 
 var app = builder.Build();
 
