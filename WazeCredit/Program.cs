@@ -12,8 +12,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IMarketForecaster, MarketForecasterV2>();
 builder.Services.AddAppSettingsConfig(builder.Configuration);
 builder.Services.AddTransient<TransientService>();
-builder.Services.AddTransient<ScopedService>();
-builder.Services.AddTransient<SingletonService>();
+builder.Services.AddScoped<ScopedService>();
+builder.Services.AddSingleton<SingletonService>();
 
 var app = builder.Build();
 
