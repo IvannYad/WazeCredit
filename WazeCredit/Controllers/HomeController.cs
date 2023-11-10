@@ -11,11 +11,14 @@ namespace WazeCredit.Controllers
     public class HomeController : Controller
     {
         private readonly IMarketForecaster _marketForecaster;
+        private readonly IOptions<StripeSettings> _stripeOptions;
         public HomeViewModel HomeViewModel { get; set; }
-        public HomeController(IMarketForecaster marketForecaster)
+        public HomeController(IMarketForecaster marketForecaster, IOptions<StripeSettings> stripeOptions)
         {
             HomeViewModel = new HomeViewModel();
             _marketForecaster = marketForecaster;
+            _stripeOptions = stripeOptions;
+
         }
         public IActionResult Index()
         {
@@ -42,7 +45,6 @@ namespace WazeCredit.Controllers
         }
 
         public IActionResult AllConfigSettings(
-            [FromServices] IOptions<StripeSettings> stripeOptions,
             [FromServices] IOptions<WazeForecastSettings> wazeForecastOptions,
             [FromServices] IOptions<SendGridSettings> sendGridOptions,
             [FromServices] IOptions<TwilioSettings> twilioOptions
@@ -50,8 +52,8 @@ namespace WazeCredit.Controllers
         {
             List<string> messages = new List<string>();
             messages.Add($"Waze config - Forecast Tracker: " + wazeForecastOptions.Value.ForecastTrackerEnabled);
-            messages.Add($"Stripe config - Publishable Key: " + stripeOptions.Value.PublishableKey);
-            messages.Add($"Stripe config - Secret Key: " + stripeOptions.Value.SecretKey);
+            messages.Add($"Stripe config - Publishable Key: " + _stripeOptions.Value.PublishableKey);
+            messages.Add($"Stripe config - Secret Key: " + _stripeOptions.Value.SecretKey);
             messages.Add($"SendGrid config - SendGrid Key: " + sendGridOptions.Value.SendGridKey);
             messages.Add($"Twilio config - AccountSid: " + twilioOptions.Value.AccountSid);
             messages.Add($"Twilio config - Auth Token: " + twilioOptions.Value.AuthToken);
