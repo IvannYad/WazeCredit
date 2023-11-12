@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Configuration;
 using WazeCredit.Middleware;
 using WazeCredit.Services;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IMarketForecaster, MarketForecasterV2>();
+builder.Services.TryAddTransient<IMarketForecaster, MarketForecaster>();
 builder.Services.AddAppSettingsConfig(builder.Configuration);
 builder.Services.AddTransient<TransientService>();
 builder.Services.AddScoped<ScopedService>();
