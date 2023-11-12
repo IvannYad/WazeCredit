@@ -12,6 +12,9 @@ namespace WazeCredit.Controllers
     {
         private readonly IMarketForecaster _marketForecaster;
         private readonly IOptions<StripeSettings> _stripeOptions;
+        [BindProperty]
+        private CreditApplication CreditModel { get; set; }
+
         public HomeViewModel HomeViewModel { get; set; }
         public HomeController(IMarketForecaster marketForecaster, IOptions<StripeSettings> stripeOptions)
         {
@@ -60,6 +63,12 @@ namespace WazeCredit.Controllers
             messages.Add($"Twilio config - Phone Number: " + twilioOptions.Value.PhoneNumber);
 
             return View(messages);
+        }
+
+        public IActionResult CreditApplication()
+        {
+            CreditModel = new CreditApplication();
+            return View(CreditModel);
         }
 
         public IActionResult Privacy()
