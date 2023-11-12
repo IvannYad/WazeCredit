@@ -16,8 +16,7 @@ namespace WazeCredit.Models
         public int PostalCode { get; set; }
         [Required]
         public double Salary { get; set; }
-        //public string ImageUrl { get; set; }
-
+        
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
         [DataType(DataType.PhoneNumber)]

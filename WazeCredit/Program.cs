@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Configuration;
+using WazeCredit.Data;
 using WazeCredit.Middleware;
 using WazeCredit.Services;
 using WazeCredit.Services.LifetimeExample;
@@ -16,6 +18,10 @@ builder.Services.AddAppSettingsConfig(builder.Configuration);
 builder.Services.AddTransient<TransientService>();
 builder.Services.AddScoped<ScopedService>();
 builder.Services.AddSingleton<SingletonService>();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+});
 
 var app = builder.Build();
 
