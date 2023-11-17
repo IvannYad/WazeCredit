@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
 using System.Diagnostics;
+using WazeCredit.Data;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
 using WazeCredit.Services;
@@ -14,18 +15,23 @@ namespace WazeCredit.Controllers
         private readonly IMarketForecaster _marketForecaster;
         private readonly ICreditValidator _creditValidator;
         private readonly IOptions<StripeSettings> _stripeOptions;
+        private readonly ApplicationDbContext _context;
+
+        // BindProperty works properly with public properties.
         [BindProperty]
-        private CreditApplication CreditModel { get; set; }
+        public CreditApplication CreditModel { get; set; }
 
         public HomeViewModel HomeViewModel { get; set; }
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<StripeSettings> stripeOptions
-            , ICreditValidator creditValidator)
+            , ICreditValidator creditValidator
+            , ApplicationDbContext context)
         {
             HomeViewModel = new HomeViewModel();
             _marketForecaster = marketForecaster;
             _stripeOptions = stripeOptions;
             _creditValidator = creditValidator;
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -92,7 +98,9 @@ namespace WazeCredit.Controllers
 
                 if (validationPassed)
                 {
-                    // Add record to database.
+                    _context.CreditApplications.Add(CreditModel);
+                    _context.SaveChanges();
+                    creditResult.CreditID = CreditModel.Id;
                     return RedirectToAction(nameof(CreditResult), creditResult);
                 }
                 else
