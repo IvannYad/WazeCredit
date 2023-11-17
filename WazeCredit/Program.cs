@@ -18,6 +18,9 @@ builder.Services.AddAppSettingsConfig(builder.Configuration);
 builder.Services.AddTransient<TransientService>();
 builder.Services.AddScoped<ScopedService>();
 builder.Services.AddSingleton<SingletonService>();
+builder.Services.AddScoped<IValidationChecker, AddressValidationChecker>();
+builder.Services.AddScoped<IValidationChecker, CreditValidationChecker>();
+builder.Services.AddScoped<ICreditValidator, CreditValidator>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));

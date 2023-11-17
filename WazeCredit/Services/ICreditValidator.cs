@@ -4,6 +4,6 @@ namespace WazeCredit.Services
 {
     public interface ICreditValidator
     {
-        Task<(bool, IEnumerable<string>)> RassAllValidations(CreditApplication model);
+        Task<(bool, IEnumerable<string>)> PassAllValidations(CreditApplication model);
     }
 }

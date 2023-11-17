@@ -9,7 +9,7 @@ namespace WazeCredit.Services
         {
             _validations = validations;
         }
-        public async Task<(bool, IEnumerable<string>)> RassAllValidations(CreditApplication model)
+        public async Task<(bool, IEnumerable<string>)> PassAllValidations(CreditApplication model)
         {
             bool validationsPassed = true;
 

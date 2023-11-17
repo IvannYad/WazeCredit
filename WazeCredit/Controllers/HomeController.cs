@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.ComponentModel;
 using System.Diagnostics;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
@@ -11,17 +12,20 @@ namespace WazeCredit.Controllers
     public class HomeController : Controller
     {
         private readonly IMarketForecaster _marketForecaster;
+        private readonly ICreditValidator _creditValidator;
         private readonly IOptions<StripeSettings> _stripeOptions;
         [BindProperty]
         private CreditApplication CreditModel { get; set; }
 
         public HomeViewModel HomeViewModel { get; set; }
-        public HomeController(IMarketForecaster marketForecaster, IOptions<StripeSettings> stripeOptions)
+        public HomeController(IMarketForecaster marketForecaster
+            , IOptions<StripeSettings> stripeOptions
+            , ICreditValidator creditValidator)
         {
             HomeViewModel = new HomeViewModel();
             _marketForecaster = marketForecaster;
             _stripeOptions = stripeOptions;
-
+            _creditValidator = creditValidator;
         }
         public IActionResult Index()
         {
@@ -69,6 +73,40 @@ namespace WazeCredit.Controllers
         {
             CreditModel = new CreditApplication();
             return View(CreditModel);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        [ActionName("CreditApplication")]
+        public async Task<IActionResult> CreditApplicationPOST()
+        {
+            if (ModelState.IsValid)
+            {
+                var (validationPassed, errorMessages) = await _creditValidator.PassAllValidations(CreditModel);
+                CreditResult creditResult = new CreditResult()
+                {
+                    ErrorList = errorMessages,
+                    CreditID = 0,
+                    Success = validationPassed,
+                };
+
+                if (validationPassed)
+                {
+                    // Add record to database.
+                    return RedirectToAction(nameof(CreditResult), creditResult);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(CreditResult), creditResult);
+                }
+            }
+
+            return View(CreditModel);
+        }
+
+        public IActionResult CreditResult(CreditResult creditResult)
+        {
+            return View(creditResult);
         }
 
         public IActionResult Privacy()
