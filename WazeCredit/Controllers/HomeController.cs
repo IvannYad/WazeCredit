@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Serilog.Core;
 using System.ComponentModel;
 using System.Diagnostics;
 using WazeCredit.Data;
@@ -16,6 +17,7 @@ namespace WazeCredit.Controllers
         private readonly ICreditValidator _creditValidator;
         private readonly IOptions<StripeSettings> _stripeOptions;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
 
         // BindProperty works properly with public properties.
         [BindProperty]
@@ -25,16 +27,21 @@ namespace WazeCredit.Controllers
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<StripeSettings> stripeOptions
             , ICreditValidator creditValidator
-            , ApplicationDbContext context)
+            , ApplicationDbContext context
+            , ILogger<HomeController> logger)
         {
             HomeViewModel = new HomeViewModel();
             _marketForecaster = marketForecaster;
             _stripeOptions = stripeOptions;
             _creditValidator = creditValidator;
             _context = context;
+            _logger = logger;
+
         }
-        public IActionResult Index()
+        public IActionResult Index([FromServices] Logger fileLogger)
         {
+            fileLogger.Information("Home controller Index Action Called");
+            _logger.LogInformation("Home controller Index Action Called");
             HomeViewModel homeViewModel = new HomeViewModel();
             MarketResult currentMarket = _marketForecaster.GetMarketResult();
 
@@ -53,7 +60,8 @@ namespace WazeCredit.Controllers
                     homeViewModel.MarketForecast = "Apply for a credit card using our application!";
                     break;
             }
-
+            _logger.LogInformation("Home controller Index Action Ended");
+            fileLogger.Information("Home controller Index Action Ended");
             return View(homeViewModel);
         }
 

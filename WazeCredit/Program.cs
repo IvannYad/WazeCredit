@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
+using Serilog;
+using Serilog.Core;
 using System.Configuration;
 using WazeCredit.Data;
 using WazeCredit.Middleware;
@@ -10,6 +14,9 @@ using WazeCredit.Utility.AppSettingsClasses;
 using WazeCredit.Utility.DI_Config;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = new LoggerConfiguration().WriteTo.File("logs/logs.txt").CreateLogger();
+builder.Services.AddSingleton<Logger>(configuration);
+builder.Logging.ClearProviders().AddConsole();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -63,7 +70,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthorization();
