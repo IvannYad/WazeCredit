@@ -4,6 +4,7 @@ using Serilog.Core;
 using System.ComponentModel;
 using System.Diagnostics;
 using WazeCredit.Data;
+using WazeCredit.Data.Repository.IRepository;
 using WazeCredit.Models;
 using WazeCredit.Models.ViewModels;
 using WazeCredit.Services;
@@ -16,9 +17,9 @@ namespace WazeCredit.Controllers
         private readonly IMarketForecaster _marketForecaster;
         private readonly ICreditValidator _creditValidator;
         private readonly IOptions<StripeSettings> _stripeOptions;
-        private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
-
+        private readonly IUnitOfWork _unitOfWork;
+        
         // BindProperty works properly with public properties.
         [BindProperty]
         public CreditApplication CreditModel { get; set; }
@@ -27,14 +28,14 @@ namespace WazeCredit.Controllers
         public HomeController(IMarketForecaster marketForecaster
             , IOptions<StripeSettings> stripeOptions
             , ICreditValidator creditValidator
-            , ApplicationDbContext context
+            , IUnitOfWork unitOfWork
             , ILogger<HomeController> logger)
         {
             HomeViewModel = new HomeViewModel();
             _marketForecaster = marketForecaster;
             _stripeOptions = stripeOptions;
             _creditValidator = creditValidator;
-            _context = context;
+            _unitOfWork = unitOfWork;
             _logger = logger;
 
         }
@@ -108,8 +109,8 @@ namespace WazeCredit.Controllers
                 {
                     CreditModel.CreditApproved = _creditService(CreditModel.Salary > 50000 ? CreditApprovedEnum.High : CreditApprovedEnum.Low)
                         .GetCreditApproved(CreditModel);
-                    _context.CreditApplications.Add(CreditModel);
-                    _context.SaveChanges();
+                    _unitOfWork.CreditApplication.Add(CreditModel);
+                    _unitOfWork.Save();
                     creditResult.CreditID = CreditModel.Id;
                     creditResult.CreditApproved = CreditModel.CreditApproved;
                     return RedirectToAction(nameof(CreditResult), creditResult);

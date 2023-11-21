@@ -3,6 +3,8 @@ using WazeCredit.Services.LifetimeExample;
 using WazeCredit.Services;
 using WazeCredit.Utility.AppSettingsClasses;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using WazeCredit.Data.Repository.IRepository;
+using WazeCredit.Data.Repository;
 
 namespace WazeCredit.Utility.DI_Config
 {
@@ -43,6 +45,8 @@ namespace WazeCredit.Utility.DI_Config
                         return ServiceProvider!.GetService<CreditApprovedLow>()!;
                 }
             });
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
