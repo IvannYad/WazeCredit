@@ -18,40 +18,8 @@ var configuration = new LoggerConfiguration().WriteTo.File("logs/logs.txt").Crea
 builder.Services.AddSingleton<Logger>(configuration);
 builder.Logging.ClearProviders().AddConsole();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IMarketForecaster, MarketForecasterV2>();
-builder.Services.TryAddTransient<IMarketForecaster, MarketForecaster>();
 builder.Services.AddAppSettingsConfig(builder.Configuration);
-builder.Services.AddTransient<TransientService>();
-builder.Services.AddScoped<ScopedService>();
-builder.Services.AddSingleton<SingletonService>();
-
-//builder.Services.AddScoped<IValidationChecker, AddressValidationChecker>();
-//builder.Services.AddScoped<IValidationChecker, CreditValidationChecker>();
-//builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IValidationChecker, AddressValidationChecker>());
-//builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IValidationChecker, CreditValidationChecker>());
-builder.Services.TryAddEnumerable(new[] {
-    ServiceDescriptor.Scoped<IValidationChecker, AddressValidationChecker>(),
-    ServiceDescriptor.Scoped<IValidationChecker, CreditValidationChecker>(),
-});
-
-builder.Services.AddScoped<ICreditValidator, CreditValidator>();
-
-builder.Services.AddScoped<CreditApprovedHigh>();
-builder.Services.AddScoped<CreditApprovedLow>();
-builder.Services.AddScoped<Func<CreditApprovedEnum, ICreditApproved>>(ServiceProvider => range =>
-{
-    switch (range)
-    {
-        case CreditApprovedEnum.Low:
-            return ServiceProvider!.GetService<CreditApprovedLow>()!;
-        case CreditApprovedEnum.High:
-            return ServiceProvider!.GetService<CreditApprovedHigh>()!;
-        default:
-            return ServiceProvider!.GetService<CreditApprovedLow>()!;
-    }
-});
+builder.Services.AddAllServices();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
